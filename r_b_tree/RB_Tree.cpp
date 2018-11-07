@@ -1,7 +1,10 @@
 #include "Node.h"
+#include <iostream>
+#include <string>
+
+const std::string COLOR[2] = {"red", "black"};
 
 class RedBlackTree {
-
  public:
  /**
   * 1.) A node is either RED or BLACK.
@@ -24,7 +27,7 @@ class RedBlackTree {
           temp = temp->right;
         } else {
           temp->right = node;
-          temp->right->parent = temp->right;
+          node->parent = temp;
           break;
         }
       } else {
@@ -33,7 +36,7 @@ class RedBlackTree {
           temp = temp->left;
         } else {
           temp->left = node;
-          temp->left->parent = temp->left;
+          temp->left->parent = temp;
           break;
         }
       }
@@ -41,33 +44,42 @@ class RedBlackTree {
   }
 
 
-
-
-
   void insert(int key) {
     Node* node = new Node(key, red);
+    // case 0. Z is the root
     if (!root) { 
-      node->color = black;
+      node->recolor();
       this->root = node;
       return;
     } 
     insert_node(node);
-    // case 1. Z.uncle = red;
-    if (auto uncle = node->red_uncle_check()) {
-      node->parent->recolor();
-      node->parent->parent->recolor();
-      uncle->recolor();
+    while (node->parent->color == red) {
+      // case 1. Z.uncle = red;
+      if (auto uncle = node->red_uncle_check()) {
+        node->parent->recolor();
+        node->parent->parent->recolor();
+        uncle->recolor();
+      }
+      // case 2. Z.uncle = black(triangle)
+      else if (auto uncle = node->black_triangle_check()) {
+        // right rotation if you're on the left
+        if (node->parent->left == node) {
+          right_rotation(node);
+        } else {
+          left_rotation(node);
+        }
+      } 
+      // case 3. Z.uncle = black(line)
+      else {
+        node->parent->recolor();
+        node->parent->parent->recolor();
+        if (node->parent->parent->right == node->parent) {
+          left_rotation(node->parent->parent);
+        } else {
+          right_rotation(node->parent->parent);
+        }
+      }
     }
-    // case 2. Z.uncle = black(triangle)
-    else if (node->parent->parent &&  // grandparent exists
-      node->parent->parent->right &&  // grandparent has a right child
-      node->parent->parent->right == node->parent &&  //that right node is your parent
-      node->parent->parent->right->color == black // and its color is black
-    )
-    else if (node->parent->parent &&
-      node->parent->parent->left &&
-      node->parent->parent->left == node->parent;
-    )
   }
 
   // <- <- <- <- <-
@@ -104,10 +116,25 @@ class RedBlackTree {
     target->parent = new_root;
   }
 
+  // https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
+  void print(const std::string& prefix, const Node* node, bool isLeft) {
+    if (node) {
+        std::cout << prefix;
+        std::cout << (isLeft ? "├──" : "└──" );
+        // print the value of the node
+        std::cout << node->key << ", " << COLOR[node->color] << std::endl;
+        // enter the next tree level - left and right branch
+        print(prefix + (isLeft ? "│   " : "    "), node->left, true);
+        print(prefix + (isLeft ? "│   " : "    "), node->right, false);
+    }
+  }
   Node* root;
 };
 
 
 int main(int argc, char** argv) {
   RedBlackTree* rb_tree = new RedBlackTree();
+  rb_tree->insert(3);
+  rb_tree->insert(5);
+  rb_tree->print("", rb_tree->root, false);
 }
