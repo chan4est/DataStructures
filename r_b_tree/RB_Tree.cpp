@@ -53,24 +53,31 @@ class RedBlackTree {
       return;
     } 
     insert_node(node);
-    while (node->parent->color == red) {
-      // case 1. Z.uncle = red;
+    while (node != this->root && node->color != black &&
+           node->parent->color == red) 
+    {
       if (auto uncle = node->red_uncle_check()) {
-        node->parent->recolor();
-        node->parent->parent->recolor();
-        uncle->recolor();
-      }
-      // case 2. Z.uncle = black(triangle)
-      else if (auto uncle = node->black_triangle_check()) {
-        // right rotation if you're on the left
-        if (node->parent->left == node) {
-          right_rotation(node);
-        } else {
-          left_rotation(node);
+        std::cout << uncle->key << std::endl;
+        if (uncle != NULL) {
+          std::cout << "what" << std::endl;
+          node->parent->recolor();
+          node->parent->parent->recolor();
+          uncle->recolor();
+          std::cout << "after recolor " << node->key << std::endl;
+          node = uncle->parent;
         }
-      } 
-      // case 3. Z.uncle = black(line)
+      }
+       // case 2. Z.uncle = black(triangle)
       else {
+        if (auto uncle = node->black_triangle_check()) {
+          // right rotation if you're on the left
+          if (node->parent->left == node) {
+            right_rotation(node);
+          } else {
+            left_rotation(node);
+          }
+        }
+         // case 3. Z.uncle = black(line)
         node->parent->recolor();
         node->parent->parent->recolor();
         if (node->parent->parent->right == node->parent) {
@@ -79,9 +86,10 @@ class RedBlackTree {
           right_rotation(node->parent->parent);
         }
       }
+      this->root->color = black;
     }
   }
-
+  
   // <- <- <- <- <-
   void left_rotation(Node* x) {
     Node* y = x->right;     // right child of target
@@ -92,10 +100,11 @@ class RedBlackTree {
     y->parent = x->parent; // setting parent of new 'root'
     if (!x->parent) {
       this->root = y;
+      this->root->parent = NULL;
     } else if (x == x->parent->left) {
       x->parent->left = y;   // if target was a left child
     } else {
-      x->parent->left = y;   // if target was a right child
+      x->parent->right = y;   // if target was a right child
     }
     y->left = x;    // new 'root' changes left to be it's old parent
     x->parent = y;  // and now, the parent pointer is set up properly
@@ -107,6 +116,7 @@ class RedBlackTree {
     target->left = new_root->right;
     if (!target->parent) {
       this->root = new_root;
+      this->root->parent = NULL;
     } else if (target == target->parent->left) {
       target->parent->left = new_root;
     } else {
@@ -136,5 +146,11 @@ int main(int argc, char** argv) {
   RedBlackTree* rb_tree = new RedBlackTree();
   rb_tree->insert(3);
   rb_tree->insert(5);
+  rb_tree->insert(7);
+  rb_tree->insert(11);
+  rb_tree->insert(13);
+  rb_tree->insert(15);
+  // rb_tree->insert(18);
+  // rb_tree->insert(12);
   rb_tree->print("", rb_tree->root, false);
 }
