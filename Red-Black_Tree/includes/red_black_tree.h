@@ -1,4 +1,7 @@
-#include "Node.h"
+#ifndef RED_BLACK_TREE_H_
+#define RED_BLACK_TREE_H_
+
+#include "node.h"
 #include <iostream>
 #include <string>
 
@@ -6,6 +9,7 @@ const std::string COLOR[2] = {"red", "black"};
 
 class RedBlackTree {
  public:
+
  /**
   * 1.) A node is either RED or BLACK.
   * 2.) The root and leaves (NULL) are BLACK.
@@ -13,6 +17,7 @@ class RedBlackTree {
   * 4.) All paths from a node to its NULL descendants
   *     contain the same number of BLACK nodes.
   */ 
+ 
   RedBlackTree() {
     this->root = NULL;
   }
@@ -57,13 +62,10 @@ class RedBlackTree {
            node->parent->color == red) 
     {
       if (auto uncle = node->red_uncle_check()) {
-        std::cout << uncle->key << std::endl;
         if (uncle != NULL) {
-          std::cout << "what" << std::endl;
           node->parent->recolor();
           node->parent->parent->recolor();
           uncle->recolor();
-          std::cout << "after recolor " << node->key << std::endl;
           node = uncle->parent;
         }
       }
@@ -126,31 +128,24 @@ class RedBlackTree {
     target->parent = new_root;
   }
 
+  void print() {
+    this->rec_print("", this->root, false);
+  }
+
   // https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
-  void print(const std::string& prefix, const Node* node, bool isLeft) {
+  void rec_print(const std::string& prefix, const Node* node, bool isLeft) {
     if (node) {
         std::cout << prefix;
         std::cout << (isLeft ? "├──" : "└──" );
         // print the value of the node
-        std::cout << node->key << ", " << COLOR[node->color] << std::endl;
+        std::cout << node->key << " : " << COLOR[node->color] << std::endl;
         // enter the next tree level - left and right branch
-        print(prefix + (isLeft ? "│   " : "    "), node->left, true);
-        print(prefix + (isLeft ? "│   " : "    "), node->right, false);
+        rec_print(prefix + (isLeft ? "│   " : "    "), node->left, true);
+        rec_print(prefix + (isLeft ? "│   " : "    "), node->right, false);
     }
   }
   Node* root;
 };
 
 
-int main(int argc, char** argv) {
-  RedBlackTree* rb_tree = new RedBlackTree();
-  rb_tree->insert(3);
-  rb_tree->insert(5);
-  rb_tree->insert(7);
-  rb_tree->insert(11);
-  rb_tree->insert(13);
-  rb_tree->insert(15);
-  // rb_tree->insert(18);
-  // rb_tree->insert(12);
-  rb_tree->print("", rb_tree->root, false);
-}
+#endif // RED_BLACK_TREE_H_

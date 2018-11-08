@@ -42,18 +42,18 @@ class Node {
       // uncle is on the left and forms a triangle
       if (this->parent->right == this && // you're a right child
           this->parent->parent &&   // grandparent exists
-          this->parent->parent->left && // grandparent has a left child
-          this->parent->parent->left != this->parent && // that left child isn't your parent (uncle)
-          this->parent->parent->left->color == black) // and its color is black
+          this->parent->parent->right && // grandparent has a left child
+          this->parent->parent->right != this->parent && // that left child isn't your parent (uncle)
+          this->parent->parent->right->color == black) // and its color is black
       {
         return (this->parent->parent->left);
       } 
       // uncle is on the right, and forms a triangle
       else if (this->parent->left == this && // you're a right child
                this->parent->parent &&  // grandparent exists
-               this->parent->right &&   // grandparent has a right child
-               this->parent->right != this->parent && // that right child isn't your parent (uncle)
-               this->parent->parent->right->color == black) // and it's color is black
+               this->parent->left &&   // grandparent has a right child
+               this->parent->left != this->parent && // that right child isn't your parent (uncle)
+               this->parent->parent->left->color == black) // and it's color is black
       {
         return (this->parent->parent->right);
       }
