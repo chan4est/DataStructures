@@ -1,1 +1,8 @@
+# Unignore all with extensions
+!*.*
+
+# VS Code Junk
 .vscode
+
+# Mac FS
+.DS_Store

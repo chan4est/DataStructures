@@ -48,7 +48,6 @@ class RedBlackTree {
     }
   }
 
-
   void insert(int key) {
     Node* node = new Node(key, red);
     // case 0. Z is the root
@@ -58,23 +57,44 @@ class RedBlackTree {
       return;
     } 
     insert_node(node);
-    this->print();
+    // this->print();
+    // if (node->key == 70) {
+    //   std::cout << node->parent->parent->key << std::endl;
+    //   if (node->parent) {
+    //     std::cout << "node's parent exists" << std::endl;
+    //   }
+    //   if (node->parent->right == node) {
+    //     std::cout << "node is a right child" << std::endl;
+    //   }
+    //   if (node->parent->parent) {
+    //     std::cout << "node's grandparent exists" << std::endl;
+    //   }
+    //   if (node->parent->parent->right == node->parent) {
+    //     std::cout << "node's parent is a right child" << std::endl;
+    //   }
+    //   if (node->parent->parent->left == NULL) {
+    //     std::cout << "grandparent left is NULL" << std::endl;
+    //   }
+      // if (node->parent && node->parent->right == node && node->parent->parent
+      // return;
+    // }
     while (node != this->root && node->color != black &&
            node->parent->color == red) 
     {
       // Uncle is Red
-      std::cout << node->parent->parent->color;
+      // std::cout << node->parent->parent->color;
+      // can't do assignments and comparisons
       if (auto uncle = node->red_uncle_check()) {
-        if (uncle != NULL) {
           node->parent->recolor();
           node->parent->parent->recolor();
           uncle->recolor();
           node = uncle->parent;
-        }
       }
       // Uncle is Black
-      else if (int uncle_case = node->black_uncle_check() != -1) {
-        // std::cout << uncle_case << std::endl;
+      else if (int uncle_case = node->black_uncle_check()) {
+        // if (node->key == 70) {
+        //    std::cout << uncle_case << std::endl;
+        // }
         switch (uncle_case) {
           // Uncle Black and Left Left Case
           // 1.) Right rotate grandparent
@@ -101,7 +121,6 @@ class RedBlackTree {
           // 1.) Left Rotate grandparent
           // 2.) Swap colors of g and p
           case 3 : {
-            std::cout << "here" << std::endl;
             auto grand = node->parent->parent;
             node->parent->recolor();
             grand->recolor();
@@ -128,7 +147,6 @@ class RedBlackTree {
   
   // <- <- <- <- <-
   void left_rotation(Node* x) {
-    std::cout << "single rotate left" << std::endl;
     Node* y = x->right;     // right child of target
     x->right = y->left;     // changing target's right child to be y's left
     if (y->left) {

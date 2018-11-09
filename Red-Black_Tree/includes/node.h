@@ -43,11 +43,13 @@ class Node {
       if (this->parent &&
           this->parent->left == this &&
           this->parent->parent &&
+          this->parent->parent->left &&
           this->parent->parent->left == this->parent &&
          (this->parent->parent->right == NULL || this->parent->parent->color == black)) 
       {
         return(1);
       } 
+      // Left Right Case
       else if (this->parent &&
                this->parent->right == this &&
                this->parent->parent &&
@@ -56,14 +58,16 @@ class Node {
       {
         return(2);
       }
+      // Right Right Case
       else if (this->parent &&
                this->parent->right == this &&
                this->parent->parent &&               
-               this->parent->right == this->parent &&
+               this->parent->parent->right == this->parent &&
               (this->parent->parent->left == NULL || this->parent->parent->left->color == black))
       {
         return(3);
       }
+      // Right Left Case
       else if (this->parent &&
                this->parent->left == this &&
                this->parent->parent->right == this->parent &&
@@ -71,7 +75,7 @@ class Node {
       {
         return(4);
       } else {
-        return(-1);
+        return(5);
       }
     }
 
