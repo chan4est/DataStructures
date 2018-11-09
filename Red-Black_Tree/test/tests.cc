@@ -119,6 +119,20 @@ TEST(Insert, Multi_Rotation) {
   EXPECT_EQ(0,   rb->root->right->left->right->color);
 }
 
+TEST(Delete, Non_Existant_Key) {
+  RedBlackTree* rb = new RedBlackTree();
+  rb->insert(56);
+  rb->remove(20);
+  EXPECT_EQ(1, rb->root->key == 56);
+}
+
+TEST(Delete, Single_Node_Delete) {
+  RedBlackTree* rb = new RedBlackTree();
+  rb->insert(56);
+  rb->remove(56);
+  EXPECT_EQ(1, rb->root->key == 56);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv); 
   return RUN_ALL_TESTS();
