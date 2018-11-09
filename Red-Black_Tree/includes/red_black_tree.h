@@ -118,6 +118,60 @@ class RedBlackTree {
       this->root->color = black;
     }
   }
+
+  Node* search_node(int key) {
+    Node* temp = root;
+    while (true) {
+      if (!temp) {
+        return NULL;                 // reached null
+      } else if (temp->key < key) {
+        temp = temp->right;          // in right sub-tree
+      } else if (temp->key > key){
+        temp = temp->left;           // in left sub-tree
+      } else {
+        return temp;                 // key found
+      }
+    }
+  }
+
+  void remove_node(Node* node) {
+    Node* parent = NULL;
+    if (node->parent) {
+      parent = node->parent;
+    }
+    if (node->left == NULL) {         // No left child
+      if (parent->left == node) {     
+        parent->left = node->right;   // Slot into parent's left slot
+      } else {
+        parent->right = node->right;  // Slot into parent's right slot
+      }
+    } else if (node->right == NULL) {  // No right child
+      if (parent->left == node) {
+        parent->left = node->left;     // Slot into parent's left slot
+      } else {
+        parent->right = node->left;    // Slot into parent's right slot
+      }
+    } else {                           // Both Left and right childen
+      // 2 cases TODO
+      auto left_child = node->left;    
+      auto temp = node->right;
+      while(temp->left != NULL) {
+        temp = temp->left;            // Successsor will be the will be the leftmost child
+      }
+      parent->right = temp;
+      temp->left = left_child;
+    }
+    free(node);
+  }
+
+  void remove(int key) {
+    auto node = search_node(key);
+    if (!node) {  // key unsuccesfully found
+      std::cout << "key not found" << std::endl;
+    } else {
+      remove_node(node);
+    }
+  }
   
   // <- <- <- <- <-
   void left_rotation(Node* x) {

@@ -74,9 +74,8 @@ class Node {
               (this->parent->parent->left == NULL || this->parent->parent->left->color == black))
       {
         return(4);
-      } else {
-        return(5);
-      }
+      } 
+      return(-1);
     }
 
     void recolor() {
