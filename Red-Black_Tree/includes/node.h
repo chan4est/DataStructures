@@ -38,27 +38,41 @@ class Node {
       return NULL;
     }
 
-    Node* black_triangle_check() {
-      // uncle is on the left and forms a triangle
-      if (this->parent->right == this && // you're a right child
-          this->parent->parent &&   // grandparent exists
-          this->parent->parent->right && // grandparent has a left child
-          this->parent->parent->right != this->parent && // that left child isn't your parent (uncle)
-          this->parent->parent->right->color == black) // and its color is black
+    int black_uncle_check() {
+      // Left Left Case
+      if (this->parent &&
+          this->parent->left == this &&
+          this->parent->parent &&
+          this->parent->parent->left == this->parent &&
+         (this->parent->parent->right == NULL || this->parent->parent->color == black)) 
       {
-        return (this->parent->parent->left);
+        return(1);
       } 
-      // uncle is on the right, and forms a triangle
-      else if (this->parent->left == this && // you're a right child
-               this->parent->parent &&  // grandparent exists
-               this->parent->left &&   // grandparent has a right child
-               this->parent->left != this->parent && // that right child isn't your parent (uncle)
-               this->parent->parent->left->color == black) // and it's color is black
+      else if (this->parent &&
+               this->parent->right == this &&
+               this->parent->parent &&
+               this->parent->parent->left == this->parent &&
+              (this->parent->parent->right == NULL || this->parent->parent->color == black)) 
       {
-        return (this->parent->parent->right);
+        return(2);
       }
-      // anything else
-      return NULL;
+      else if (this->parent &&
+               this->parent->right == this &&
+               this->parent->parent &&               
+               this->parent->right == this->parent &&
+              (this->parent->parent->left == NULL || this->parent->parent->left->color == black))
+      {
+        return(3);
+      }
+      else if (this->parent &&
+               this->parent->left == this &&
+               this->parent->parent->right == this->parent &&
+              (this->parent->parent->left == NULL || this->parent->parent->left->color == black))
+      {
+        return(4);
+      } else {
+        return(-1);
+      }
     }
 
     void recolor() {

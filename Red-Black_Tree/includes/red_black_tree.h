@@ -16,8 +16,8 @@ class RedBlackTree {
   * 3.) If a node is RED, then its children are BLACK
   * 4.) All paths from a node to its NULL descendants
   *     contain the same number of BLACK nodes.
-  */ 
- 
+  */
+
   RedBlackTree() {
     this->root = NULL;
   }
@@ -58,9 +58,12 @@ class RedBlackTree {
       return;
     } 
     insert_node(node);
+    this->print();
     while (node != this->root && node->color != black &&
            node->parent->color == red) 
     {
+      // Uncle is Red
+      std::cout << node->parent->parent->color;
       if (auto uncle = node->red_uncle_check()) {
         if (uncle != NULL) {
           node->parent->recolor();
@@ -69,31 +72,63 @@ class RedBlackTree {
           node = uncle->parent;
         }
       }
-       // case 2. Z.uncle = black(triangle)
-      else {
-        if (auto uncle = node->black_triangle_check()) {
-          // right rotation if you're on the left
-          if (node->parent->left == node) {
-            right_rotation(node);
-          } else {
-            left_rotation(node);
+      // Uncle is Black
+      else if (int uncle_case = node->black_uncle_check() != -1) {
+        // std::cout << uncle_case << std::endl;
+        switch (uncle_case) {
+          // Uncle Black and Left Left Case
+          // 1.) Right rotate grandparent
+          // 2.) Swap colors of grandparent and parent
+          case 1 : {
+            auto grand = node->parent->parent;
+            node->parent->recolor();
+            grand->recolor();
+            right_rotation(grand);
+            break;
           }
+          // Uncle Black and Left Right Case
+          // Left Rotate p
+          // Apply Left Lefy Case
+          case 2 : {
+            auto grand = node->parent->parent;
+            node->recolor();
+            grand->recolor();
+            left_rotation(node->parent);
+            right_rotation(grand);
+            break;
+          }
+          // Uncle Black and Right Right Case
+          // 1.) Left Rotate grandparent
+          // 2.) Swap colors of g and p
+          case 3 : {
+            std::cout << "here" << std::endl;
+            auto grand = node->parent->parent;
+            node->parent->recolor();
+            grand->recolor();
+            left_rotation(grand);
+            break;
+          }
+          // Uncle Black and Right Left Case
+          // 1.) Right Rotate parent
+          // 2.) Apply Right Right Case
+          case 4 : {
+            auto grand = node->parent->parent;
+            node->recolor();
+            grand->recolor();
+            right_rotation(node->parent);
+            left_rotation(grand);
+            break;
+          }
+          default : break;
         }
-         // case 3. Z.uncle = black(line)
-        node->parent->recolor();
-        node->parent->parent->recolor();
-        if (node->parent->parent->right == node->parent) {
-          left_rotation(node->parent->parent);
-        } else {
-          right_rotation(node->parent->parent);
-        }
-      }
+      } 
       this->root->color = black;
     }
   }
   
   // <- <- <- <- <-
   void left_rotation(Node* x) {
+    std::cout << "single rotate left" << std::endl;
     Node* y = x->right;     // right child of target
     x->right = y->left;     // changing target's right child to be y's left
     if (y->left) {
@@ -113,19 +148,23 @@ class RedBlackTree {
   }
 
   // Same thing, just in reverse. New var names for practice sake.
-  void right_rotation(Node* target) {
-    Node* new_root = target->left;
-    target->left = new_root->right;
-    if (!target->parent) {
-      this->root = new_root;
-      this->root->parent = NULL;
-    } else if (target == target->parent->left) {
-      target->parent->left = new_root;
-    } else {
-      target->parent->right = new_root;
+  void right_rotation(Node* x) {
+    Node* y = x->left;     // right child of target
+    x->left = y->right;     // changing target's right child to be y's left
+    if (y->right) {
+      y->right->parent = x;  // setting parent, if not NULL
     }
-    new_root->right = target;
-    target->parent = new_root;
+    y->parent = x->parent; // setting parent of new 'root'
+    if (!x->parent) {
+      this->root = y;
+      this->root->parent = NULL;
+    } else if (x == x->parent->right) {
+      x->parent->right = y;   // if target was a left child
+    } else {
+      x->parent->left = y;   // if target was a right child
+    }
+    y->right = x;    // new 'root' changes left to be it's old parent
+    x->parent = y;  // and now, the parent pointer is set up properly
   }
 
   void print() {
