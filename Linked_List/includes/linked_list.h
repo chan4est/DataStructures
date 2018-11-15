@@ -1,5 +1,6 @@
 #include "node.h"
 #include <iostream>
+#include <vector>
 
 class LinkedList {
 
@@ -7,7 +8,7 @@ class LinkedList {
   LinkedList() : head(NULL), size(0) {};
 
   // O(n) insert - complete trash
-  void insert(int key) {
+  void append(int key) {
     Node* new_node = new Node(key);
     Node* temp = head;
     for (int i = 1; i < size; i++) {
@@ -21,14 +22,49 @@ class LinkedList {
     size++;
   }
 
-  void remove(int location) {
-    if (location < 0 || location > size || this->head == NULL) {
-      std::cout << "Out of bounds" << std::endl;
-      return;
+  int& operator [](int index) {
+    Node* temp = head;
+    for (int i = 1; i < index; i++) {
+      temp = temp->next;
     }
+    return temp->key;
+  }
+
+  bool insert_at_index(int key, int index) {
+    if (index < 0 || index > size || this->head == NULL)
+      return false;
+    Node* new_node = new Node(key);
+    Node* temp = head;
+    Node* prev = NULL;
+    for (int i = 1; i < index; i++) {
+      prev = temp;
+      temp = temp->next;
+    }
+    if (prev == NULL) {
+      this->head->next = new_node;
+    } else {
+      prev->next = new_node;
+      new_node->next = temp;
+    }
+    return true;
+  }
+
+  int find_first_index_of(int key) {
+    Node* temp = head;
+    for (int i = 1; i < size; i++) {
+      if (temp->key == key)
+        return i-1;
+      temp = temp->next;
+    }
+    return -1;
+  }
+
+  bool delete_at_index(int index) {
+    if (index < 0 || index > size || this->head == NULL)
+      return false;
     Node* temp = this->head;
     Node* prev = NULL;
-    for (int i = 0; i < location; i++) {
+    for (int i = 0; i < index; i++) {
       prev = temp;
       temp = temp->next;
     }
@@ -39,6 +75,7 @@ class LinkedList {
     }
     delete(temp);
     size--;
+    return true;
   }
 
   void print() {

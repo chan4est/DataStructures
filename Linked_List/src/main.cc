@@ -2,12 +2,12 @@
 
 int main(int argc, char** argv) {
   LinkedList* ll = new LinkedList();
-  ll->insert(10);
-  ll->remove(0);
+  ll->append(10);
+  ll->delete_at_index(0);
   ll->print();
-  ll->insert(20);
-  ll->insert(30);
+  ll->append(20);
+  ll->append(30);
   ll->print();
-  ll->remove(1);
+  ll->delete_at_index(1);
   ll->print();
 }
