@@ -32,7 +32,27 @@ class BTree {
   }
 
   void B_Tree_Insert_NonFull(Node* x, int key) {
-    
+    int i = x->n;
+    if (x->leaf) {
+      while (i >= 1 && key < x->keys[i]) {
+        x->keys[i+1] = x->keys[i];
+        i = i - 1;
+      }
+      x->keys[i+1] = key;
+      x->n = x->n + 1;
+    } else {
+      while (i >= 1 and key > x->keys[i]) {
+        i = i - 1;
+      }
+      i = i + 1;
+      if (x->children[i]->n == 2*t - 1) {
+        B_Tree_Split_Child(x, i);
+        if (key > x->keys[i]) {
+          i = i + 1;
+        }
+      }
+      B_Tree_Insert_NonFull(x->children[i], key);
+    }
   }
 
   void B_Tree_Split_Child(Node* x, int loc) {
