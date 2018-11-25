@@ -1,86 +1,65 @@
 #include "node.h"
 #include <iostream>
+#include <queue>
 
 class BTree {
 
  public:
-  BTree() {
-    root = NULL;
-    B_Tree_Create();
-  }
+  BTree(int t) : root(NULL), t(t) {}
 
-   void B_Tree_Insert(int key) {
-    Node* r = root;
-    if (root->n == 2*t - 1) {
-      Node* s = new Node();
-      root = s;
-      s->leaf = false;
-      s->n = 0;
-      s->children[0] = r;
-      B_Tree_Split_Child(s, 0);
-      B_Tree_Insert_NonFull(s, key);
-    } else {
-      B_Tree_Insert_NonFull(r, key);
+  void insert(int key) {
+    if (root == NULL) {
+      root = new Node(t, true);
+      root->keys[0] = key;
+      root->n = 1;
+    }
+    else {
+      if (root->n == 2*t-1) {
+        Node* temp = new Node(t, false);
+        temp->C[0] = root;
+        temp->splitChild(0, root);
+        int i = 0;
+        if (temp->keys[0] < key)
+          i++;
+        temp->C[i]->insertNonFull(key);
+        root = temp;
+      } else {
+        root->insertNonFull(key);
+      }
     }
   }
 
- private:
-  void B_Tree_Create() {
-    Node* x = new Node();
-    x->leaf = true;
-    root = x;
-  }
+  void traverse() { if (root) { root->traverse(); } }
 
-  void B_Tree_Insert_NonFull(Node* x, int key) {
-    int i = x->n;
-    if (x->leaf) {
-      while (i >= 1 && key < x->keys[i]) {
-        x->keys[i+1] = x->keys[i];
-        i = i - 1;
-      }
-      x->keys[i+1] = key;
-      x->n = x->n + 1;
-    } else {
-      while (i >= 1 and key > x->keys[i]) {
-        i = i - 1;
-      }
-      i = i + 1;
-      if (x->children[i]->n == 2*t - 1) {
-        B_Tree_Split_Child(x, i);
-        if (key > x->keys[i]) {
-          i = i + 1;
+  void print() {
+    std::queue<Node*> q;
+    q.push(this->root);
+    int depth = 0;
+
+    while (!q.empty()) {
+      std::queue<Node*> level;
+      std::cout << "depth : " << depth << std::endl;
+
+      while (!q.empty()) {
+        Node* temp = q.front();
+        q.pop();
+        std::cout << "[";
+        for (int i = 1; i <= temp->n; i++) {
+          std::cout << temp->keys[i] << " ";
+        }
+        std::cout << "]";
+        if (!temp->leaf) {
+          for (int i = 0; i < temp->n+1; i++) {
+            level.push(temp->C[i]);
+          }
         }
       }
-      B_Tree_Insert_NonFull(x->children[i], key);
+      std::cout << std::endl;
+      depth++;
+      q = level;
     }
-  }
-
-  void B_Tree_Split_Child(Node* x, int loc) {
-    Node* z = new Node();
-    Node* y = x->children[loc];
-    z->leaf = y->leaf;
-    z->n = t-1; // in the assignment's case, 1
-    for (int i = 0; i < t-1; i++) {
-      z->keys[i] = y->keys[i+t]; 
-      y->keys[i+t] = -1;          // clear out the slot
-    }
-    if (!y->leaf) {
-      for (int i = 0; i < t; i++) {
-        z->children[i] = y->children[i+t];
-        y->children[i+t] = NULL;  // clear out the slot
-      }
-    }
-    y->n = t-1;
-    for (int i = x->n+1; i > loc+1; i--) {
-      x->children[i] = x->children[i-1];
-    }
-    x->children[loc+1] = z;
-    for (int i = x->n; i > loc; i--) {
-      x->keys[i+1] = x->keys[i];
-    }
-    x->keys[loc] = y->keys[t];
-    x->n = x->n+1;
   }
 
   Node* root;
+  int t;
 };
