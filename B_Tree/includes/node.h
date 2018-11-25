@@ -13,17 +13,9 @@ class Node {
     keys = new int[2*t-1];
     C = new Node *[2*t];
     n = 0;
-  }
-
-  void traverse() {
-    int i;
-    for (i = 0; i < n; i++) {
-      if (!leaf) 
-        C[i]->traverse();
-      std::cout << " " << keys[i];
+    for (int i = 0; i < 2*t; i++) {
+      C[i] = NULL;
     }
-    if (!leaf)
-      C[i]->traverse();
   }
 
   void insertNonFull(int key) {

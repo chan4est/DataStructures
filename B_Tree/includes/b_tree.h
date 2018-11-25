@@ -29,34 +29,32 @@ class BTree {
     }
   }
 
-  void traverse() { if (root) { root->traverse(); } }
-
   void print() {
     std::queue<Node*> q;
-    q.push(this->root);
+    q.push(root);
     int depth = 0;
-
     while (!q.empty()) {
-      std::queue<Node*> level;
-      std::cout << "depth : " << depth << std::endl;
-
+      std::queue<Node*> next;
+      std::cout << "Depth: " << depth << '\t';
       while (!q.empty()) {
         Node* temp = q.front();
         q.pop();
         std::cout << "[";
-        for (int i = 1; i <= temp->n; i++) {
+        for (int i = 0; i < temp->n-1; i++) {
           std::cout << temp->keys[i] << " ";
         }
-        std::cout << "]";
+        std::cout << temp->keys[temp->n-1] << "]";
         if (!temp->leaf) {
           for (int i = 0; i < temp->n+1; i++) {
-            level.push(temp->C[i]);
+            if (temp->C[i]) {
+              next.push(temp->C[i]);
+            }
           }
         }
       }
       std::cout << std::endl;
       depth++;
-      q = level;
+      q = next;
     }
   }
 
