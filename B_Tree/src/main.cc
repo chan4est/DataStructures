@@ -10,6 +10,5 @@ int main(int argc, char** argv) {
   tree->insert(30);
   tree->insert(7);
   tree->insert(17);
-  tree->traverse();
-  std::cout << '\n';
+  tree->print();
 }
